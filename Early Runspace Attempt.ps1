@@ -32,7 +32,10 @@ foreach ($tablerow in $tablerows){
 #Number of Runspaces to use
 $RunspaceThreads = 100
 
-$ParamList = @($urlArray)
-
+#Parameters
+$parameters = {
+        $urlArray
+}
     #Accessing the URLs
      #   Invoke-WebRequest $ParamList
+
