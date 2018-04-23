@@ -1,4 +1,8 @@
-﻿#variable declaration
+﻿#Importing Modules
+
+Import-Module PoshRSJob
+
+#variable declaration
 
 $page = Invoke-WebRequest https://www.zyxware.com/articles/4344/list-of-fortune-500-companies-and-their-websites
 
@@ -25,4 +29,10 @@ foreach ($tablerow in $tablerows){
         if($i -eq 101){Break}
 }
 
+#Number of Runspaces to use
+$RunspaceThreads = 100
 
+$ParamList = @($urlArray)
+
+    #Accessing the URLs
+     #   Invoke-WebRequest $ParamList
