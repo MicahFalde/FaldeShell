@@ -1,9 +1,7 @@
-﻿#Importing Modules
-
+#Importing Modules
 Import-Module PoshRSJob
 
 #variable declaration
-
 $page = Invoke-WebRequest https://www.zyxware.com/articles/4344/list-of-fortune-500-companies-and-their-websites
 
 $links = $page.links
@@ -12,10 +10,7 @@ $tables = @($page.ParsedHtml.getElementsByTagName("TABLE"))
 
 $tableRows = $tables[0].rows
 
-
-
 #loops through the table to get only the top 100 urls.
-
 $urlArray = @()
 
 foreach ($tablerow in $tablerows){
@@ -30,19 +25,25 @@ foreach ($tablerow in $tablerows){
 }
 
 #Number of Runspaces to use
-$RunspaceThreads = 100
+#$RunspaceThreads = 1
 
-#Parameters
-$parameters = {
-        $urlArray
-}
+#Declaring Variables 
+$ParamList = @($urlArray)
+
+$urlArray|start-rsjob -Name {$_} -ScriptBlock  {
+
+    $webRequest = (Invoke-WebRequest  $Using:ParamList)
+    
+
+    [pscustomobject]@{
+
+    
+  }
+}  -Throttle 5 | Wait-RSJob -ShowProgress 
+    
     #Accessing the URLs
     #Invoke-WebRequest $ParamList
-    
-    #BeginInvoke()
-    
-    #Start-RSJob
-    
+
+    #Start-RSJob 
+
     #Get-Content $ParamList
-    
-    #EndInvoke()
