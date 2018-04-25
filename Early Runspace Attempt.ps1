@@ -29,21 +29,20 @@ foreach ($tablerow in $tablerows){
 
 #Declaring Variables 
 $ParamList = @($urlArray)
+$webRequest = @()
 
 $urlArray|start-rsjob -Name {$_} -ScriptBlock  {
 
-    $webRequest = (Invoke-WebRequest  $Using:ParamList)
+    #$webRequest = (Invoke-WebRequest  $Using:ParamList)
     
+    #Invoke-WebRequest $urlArray
 
-    [pscustomobject]@{
+    Get-Content $urlArray
 
-    
-  }
 }  -Throttle 5 | Wait-RSJob -ShowProgress 
+    
+    
     
     #Accessing the URLs
     #Invoke-WebRequest $ParamList
-
-    #Start-RSJob 
-
     #Get-Content $ParamList
