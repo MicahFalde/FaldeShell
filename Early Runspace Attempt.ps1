@@ -37,5 +37,12 @@ $parameters = {
         $urlArray
 }
     #Accessing the URLs
-     #   Invoke-WebRequest $ParamList
-
+    #Invoke-WebRequest $ParamList
+    
+    #BeginInvoke()
+    
+    #Start-RSJob
+    
+    #Get-Content $ParamList
+    
+    #EndInvoke()
