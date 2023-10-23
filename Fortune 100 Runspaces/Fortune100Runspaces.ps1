@@ -1,11 +1,23 @@
 # Load the HTML content of the webpage
 $html = Invoke-WebRequest -Uri "https://www.zyxware.com/articles/4344/list-of-fortune-500-companies-and-their-websites"
 
-# Extract all the links from the page
-$urls = $html.Links | Where-Object { $_.href -like "http*" } | Select-Object -ExpandProperty href
+# Extract the first 100 companies and their URLs from the table
+$table = $html.ParsedHtml.getElementsByTagName('table')[0]
+$rows = $table.getElementsByTagName('tr') | Select-Object -First 100
 
-# Filter out the non-company links based on common patterns in URLs
-$companyUrls = $urls | Where-Object { $_ -match "https:\/\/www\.fortune\.com\/company\/" }
+$companies = @()
+
+foreach ($row in $rows) {
+    $cells = $row.getElementsByTagName('td')
+    $rank = $cells[0].innerText
+    $name = $cells[1].innerText
+    $url = $cells[2].getElementsByTagName('a')[0].href
+    $companies += [PSCustomObject]@{
+        Rank = $rank
+        Name = $name
+        URL = $url
+    }
+}
 
 # Create a Fortune100 folder if it doesn't exist
 $fortune100Folder = "C:\path\to\Fortune100"
@@ -31,7 +43,7 @@ $runspace.Open()
 $jobs = @()
 
 # Start parallel downloads
-ForEach ($url in $companyUrls) {
+ForEach ($company in $companies) {
     $job = [powershell]::Create().AddScript({
         param (
             [string]$url,
@@ -39,8 +51,8 @@ ForEach ($url in $companyUrls) {
         )
         Download-WebsiteContent -url $url -outputFilePath $outputFilePath
     })
-    $job.AddArgument($url)
-    $outputFilePath = Join-Path -Path $fortune100Folder -ChildPath "$($url -replace 'https?://','').html"
+    $job.AddArgument($company.URL)
+    $outputFilePath = Join-Path -Path $fortune100Folder -ChildPath "$($company.Name -replace '[^\w\s]', '').html"
     $job.AddArgument($outputFilePath)
     $job.Runspace = $runspace
     $jobs += $job
